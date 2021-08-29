@@ -74,6 +74,7 @@ func getTrace(c *gin.Context) {
 }
 
 func main() {
+    gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
 	r.GET("/trace", getTrace)
 	r.GET("/record", getRecordFromNS)

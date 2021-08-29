@@ -1,5 +1,7 @@
 FROM golang:1.16-alpine as build-env
 
+ENV GIN_MODE=release
+
 WORKDIR /app
 
 COPY go.mod ./
@@ -8,11 +10,15 @@ RUN go mod download
 
 COPY *.go ./
 
-RUN go build -o /diglett
+RUN GIN_MODE=release CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-w -s" -o /diglett
 
-FROM gcr.io/distroless/base
-COPY --from=build-env /diglett /
+FROM scratch
+
+WORKDIR /
+
+COPY --from=build-env /diglett /diglett
 
 EXPOSE 8080
 
-CMD [ "/diglett" ]
+CMD ["/diglett"]
+
